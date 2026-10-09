@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Short Vowel Bubble Pop - Educational Phonics Game</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Fredoka for playful child-friendly typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@600;800;900&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    /* Custom game styles and animations */
+    body {
+      font-family: 'Fredoka', 'Nunito', sans-serif;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+      overflow: hidden;
+      background: #87CEEB;
+    }
+
+    /* Animated gradient background */
+    .bg-sky-ocean {
+      background: linear-gradient(180deg, #70e1ff 0%, #a2eaed 40%, #83e5ff 70%, #4facfe 100%);
+    }
+
+    /* Glassmorphism card effects */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 3px solid rgba(255, 255, 255, 0.7);
+      box-shadow: 0 20px 40px rgba(0, 80, 150, 0.18);
+    }
+
+    /* Playful 3D Button styles */
+    .btn-3d {
+      transition: all 0.15s ease;
+      box-shadow: 0 6px 0 rgba(0, 0, 0, 0.2);
+      transform: translateY(0);
+    }
+    .btn-3d:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 0 rgba(0, 0, 0, 0.2);
+    }
+    .btn-3d:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+    }
+
+    /* Pulse animation for notifications */
+    @keyframes pulse-grow {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .animate-pulse-grow {
+      animation: pulse-grow 1.8s infinite ease-in-out;
+    }
+
+    /* Red screen wobble shake for incorrect answer */
+    @keyframes screen-wobble {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-12px) rotate(-1deg); }
+      40%, 80% { transform: translateX(12px) rotate(1deg); }
+    }
+    .wobble-active {
+      animation: screen-wobble 0.4s ease-in-out;
+    }
+
+    /* Custom scrollbars for modal lists */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #3b82f6;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body class="h-screen w-screen bg-sky-ocean flex flex-col justify-between select-none relative overflow-hidden">
+
+  <!-- MAIN MENU CONTAINER -->
+  <div id="main-menu" class="absolute inset-0 z-30 flex flex-col items-center justify-center p-4 sm:p-6 overflow-y-auto">
+    <div class="glass-card max-w-xl w-full rounded-3xl p-6 sm:p-8 text-center relative z-10 my-auto border-4 border-white/80">
+      
+      <!-- Title Banner -->
+      <div class="mb-6 relative">
+        <span class="inline-block px-4 py-1.5 bg-yellow-300 text-yellow-900 font-bold rounded-full text-xs sm:text-sm tracking-wide uppercase shadow-sm mb-2">
+          <i class="fa-solid fa-star text-yellow-600 mr-1"></i> Interactive Phonics Fun
+        </span>
+        <h1 class="text-4xl sm:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-indigo-600 to-teal-500 drop-shadow-md">
+          BUBBLE POP!
+        </h1>
+        <p class="text-slate-600 text-base sm:text-lg font-semibold mt-1">
+          Pop correct <span class="text-blue-600 font-black">CVC</span> & <span class="text-teal-600 font-black">CCVC</span> short vowel words!
+        </p>
+      </div>
+
+      <!-- Game Mode Selection Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mb-6 text-left">
+        <!-- Level 1 -->
+        <button onclick="startGame(1)" class="btn-3d bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-500 hover:to-teal-600 text-white p-4 rounded-2xl flex items-center space-x-3.5 border-2 border-emerald-200">
+          <div class="bg-white/20 p-3 rounded-xl text-2xl flex items-center justify-center w-12 h-12">
+            🐱
+          </div>
+          <div>
+            <div class="font-black text-lg leading-tight">Level 1: CVC Words</div>
+            <div class="text-xs text-emerald-100 font-medium">3-letter words (cat, bed, pig)</div>
+          </div>
+        </button>
+
+        <!-- Level 2 -->
+        <button onclick="startGame(2)" class="btn-3d bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white p-4 rounded-2xl flex items-center space-x-3.5 border-2 border-blue-200">
+          <div class="bg-white/20 p-3 rounded-xl text-2xl flex items-center justify-center w-12 h-12">
+            🐸
+          </div>
+          <div>
+            <div class="font-black text-lg leading-tight">Level 2: CCVC Blends</div>
+            <div class="text-xs text-blue-100 font-medium">4-letter blends (frog, swim, stop)</div>
+          </div>
+        </button>
+
+        <!-- Level 3 -->
+        <button onclick="openVowelSpotlightModal()" class="btn-3d bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white p-4 rounded-2xl flex items-center space-x-3.5 border-2 border-purple-200">
+          <div class="bg-white/20 p-3 rounded-xl text-2xl flex items-center justify-center w-12 h-12">
+            🎯
+          </div>
+          <div>
+            <div class="font-black text-lg leading-tight">Level 3: Vowel Focus</div>
+            <div class="text-xs text-purple-100 font-medium">Target 'A', 'E', 'I', 'O', or 'U'</div>
+          </div>
+        </button>
+
+        <!-- Level 4 -->
+        <button onclick="startGame(4)" class="btn-3d bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white p-4 rounded-2xl flex items-center space-x-3.5 border-2 border-amber-200">
+          <div class="bg-white/20 p-3 rounded-xl text-2xl flex items-center justify-center w-12 h-12">
+            ⚡
+          </div>
+          <div>
+            <div class="font-black text-lg leading-tight">Level 4: Speed Arcade</div>
+            <div class="text-xs text-amber-100 font-medium">Fast action & combo multipliers</div>
+          </div>
+        </button>
+      </div>
+
+      <!-- Action Footer Buttons -->
+      <div class="flex items-center justify-between pt-2 border-t border-slate-200/80">
+        <button onclick="openInstructionsModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition flex items-center gap-1.5">
+          <i class="fa-solid fa-circle-question text-blue-500"></i> How to Play
+        </button>
+        
+        <div class="flex items-center gap-2">
+          <button id="menu-sound-btn" onclick="toggleAudio()" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex items-center justify-center text-base transition">
+            <i class="fa-solid fa-volume-high text-teal-600"></i>
+          </button>
+          <button id="menu-speech-btn" onclick="toggleSpeech()" class="w-10 h-10 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl flex items-center justify-center text-base transition" title="Toggle Word Pronunciation">
+            <i class="fa-solid fa-comment-dots text-purple-600"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SHORT VOWEL SPOTLIGHT MODAL -->
+  <div id="vowel-modal" class="hidden fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full rounded-3xl p-6 text-center border-4 border-purple-200">
+      <h2 class="text-2xl font-black text-slate-800 mb-2">Select Short Vowel Sound</h2>
+      <p class="text-slate-600 text-sm mb-6">Choose a specific vowel sound to practice popping!</p>
+
+      <div class="grid grid-cols-5 gap-2 mb-6">
+        <button onclick="startGame(3, 'a')" class="btn-3d py-4 bg-red-400 hover:bg-red-500 text-white font-black text-2xl rounded-2xl border-2 border-red-200">A</button>
+        <button onclick="startGame(3, 'e')" class="btn-3d py-4 bg-orange-400 hover:bg-orange-500 text-white font-black text-2xl rounded-2xl border-2 border-orange-200">E</button>
+        <button onclick="startGame(3, 'i')" class="btn-3d py-4 bg-emerald-400 hover:bg-emerald-500 text-white font-black text-2xl rounded-2xl border-2 border-emerald-200">I</button>
+        <button onclick="startGame(3, 'o')" class="btn-3d py-4 bg-blue-400 hover:bg-blue-500 text-white font-black text-2xl rounded-2xl border-2 border-blue-200">O</button>
+        <button onclick="startGame(3, 'u')" class="btn-3d py-4 bg-purple-400 hover:bg-purple-500 text-white font-black text-2xl rounded-2xl border-2 border-purple-200">U</button>
+      </div>
+
+      <button onclick="startGame(3, 'all')" class="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-extrabold rounded-2xl mb-3 shadow-md">
+        🌟 Practice All Vowels Mixed
+      </button>
+
+      <button onclick="closeVowelSpotlightModal()" class="px-6 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-sm">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <!-- INSTRUCTIONS MODAL -->
+  <div id="instructions-modal" class="hidden fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full rounded-3xl p-6 text-left border-4 border-blue-200 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
+          <i class="fa-solid fa-lightbulb text-yellow-500"></i> How To Play
+        </h2>
+        <button onclick="closeInstructionsModal()" class="text-slate-400 hover:text-slate-600 text-xl">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 text-slate-700 text-sm font-medium">
+        <div class="flex gap-3 items-start bg-blue-50/80 p-3 rounded-2xl border border-blue-100">
+          <div class="text-2xl">🧼</div>
+          <div>
+            <strong class="text-blue-900 block font-bold">Pop Correct Words</strong>
+            Bubbles float up with words inside. Tap or click only the bubbles with <span class="text-emerald-600 font-bold">correct short vowel spellings</span>!
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start bg-amber-50/80 p-3 rounded-2xl border border-amber-100">
+          <div class="text-2xl">⚠️</div>
+          <div>
+            <strong class="text-amber-900 block font-bold">Avoid Misspellings</strong>
+            Popping fake or misspelled words like <span class="text-rose-600 font-bold opacity-90 underline decoration-wavy">"cet"</span> or <span class="text-rose-600 font-bold opacity-90 underline decoration-wavy">"frug"</span> loses a heart life!
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start bg-emerald-50/80 p-3 rounded-2xl border border-emerald-100">
+          <div class="text-2xl">🔥</div>
+          <div>
+            <strong class="text-emerald-900 block font-bold">Build Combo Multipliers</strong>
+            Pop consecutive correct words without errors to rack up 2x, 3x, and 4x bonus scores!
+          </div>
+        </div>
+
+        <div class="flex gap-3 items-start bg-purple-50/80 p-3 rounded-2xl border border-purple-100">
+          <div class="text-2xl">🔊</div>
+          <div>
+            <strong class="text-purple-900 block font-bold">Listen & Learn</strong>
+            Listen closely when words pop! Your browser speaks the word aloud to reinforce short vowel sounds.
+          </div>
+        </div>
+      </div>
+
+      <button onclick="closeInstructionsModal()" class="w-full mt-5 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl shadow-md">
+        Got It, Let's Play!
+      </button>
+    </div>
+  </div>
+
+  <!-- GAME HUD HEADER (VISIBLE DURING GAMEPLAY) -->
+  <div id="game-hud" class="hidden absolute top-0 left-0 right-0 z-20 p-3 sm:p-4 flex flex-col gap-2 pointer-events-none">
+    <div class="flex items-center justify-between gap-2 max-w-5xl mx-auto w-full">
+      
+      <!-- Back / Pause Button -->
+      <button onclick="pauseGame()" class="pointer-events-auto bg-white/90 hover:bg-white text-slate-700 w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center font-bold shadow-md border-2 border-white transition">
+        <i class="fa-solid fa-pause text-base sm:text-lg"></i>
+      </button>
+
+      <!-- Target Banner -->
+      <div class="bg-white/95 px-3 py-1.5 sm:px-5 sm:py-2 rounded-2xl shadow-md border-2 border-white flex items-center gap-2">
+        <span id="target-badge" class="px-2 py-0.5 bg-blue-500 text-white text-xs font-black rounded-lg uppercase">
+          Level 1
+        </span>
+        <span id="target-text" class="text-xs sm:text-sm font-extrabold text-slate-800">
+          Pop correct CVC words!
+        </span>
+      </div>
+
+      <!-- Lives & Score Display -->
+      <div class="flex items-center gap-2">
+        <!-- Hearts -->
+        <div id="lives-container" class="bg-white/95 px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-2xl shadow-md border-2 border-white flex items-center gap-1">
+          <i class="fa-solid fa-heart text-rose-500 text-sm sm:text-base"></i>
+          <i class="fa-solid fa-heart text-rose-500 text-sm sm:text-base"></i>
+          <i class="fa-solid fa-heart text-rose-500 text-sm sm:text-base"></i>
+        </div>
+
+        <!-- Score -->
+        <div class="bg-white/95 px-3 py-1.5 sm:px-4 sm:py-2 rounded-2xl shadow-md border-2 border-white text-center">
+          <div class="text-[10px] text-slate-400 font-bold uppercase leading-none">Score</div>
+          <div id="hud-score" class="text-base sm:text-lg font-black text-blue-600 leading-none mt-0.5">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Progress Bar & Combo Streak Row -->
+    <div class="max-w-5xl mx-auto w-full flex items-center gap-3">
+      <div class="flex-1 bg-white/60 h-3 sm:h-4 rounded-full p-0.5 backdrop-blur border border-white/80 overflow-hidden">
+        <div id="hud-progress-bar" class="bg-gradient-to-r from-emerald-400 to-teal-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+      </div>
+
+      <!-- Combo Indicator -->
+      <div id="combo-badge" class="hidden bg-gradient-to-r from-amber-400 to-orange-500 text-white px-2.5 py-0.5 rounded-full text-xs font-black shadow-md animate-bounce">
+        🔥 2x COMBO!
+      </div>
+    </div>
+
+    <!-- Live Educational Phonics Tip Banner -->
+    <div id="educational-tip-banner" class="hidden max-w-lg mx-auto w-full bg-rose-500 text-white px-4 py-2 rounded-2xl shadow-lg border-2 border-white text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 animate-bounce">
+      <i class="fa-solid fa-circle-exclamation text-yellow-300 text-lg"></i>
+      <span id="tip-text">"'cet' is misspelled! The short 'a' sound is spelled with A -> 'cat'"</span>
+    </div>
+  </div>
+
+  <!-- CANVAS FOR BUBBLE PHYSICS & ANIMATIONS -->
+  <canvas id="game-canvas" class="absolute inset-0 z-10 w-full h-full cursor-pointer"></canvas>
+
+  <!-- PAUSE MODAL -->
+  <div id="pause-modal" class="hidden fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card max-w-sm w-full rounded-3xl p-6 text-center border-4 border-white/80">
+      <h2 class="text-3xl font-black text-slate-800 mb-4">Game Paused</h2>
+      <div class="space-y-3">
+        <button onclick="resumeGame()" class="w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl shadow-md">
+          ▶ Resume Game
+        </button>
+        <button onclick="restartLevel()" class="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white font-extrabold rounded-2xl shadow-md">
+          🔄 Restart Level
+        </button>
+        <button onclick="returnToMainMenu()" class="w-full py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-2xl">
+          🏠 Main Menu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEVEL VICTORY MODAL -->
+  <div id="victory-modal" class="hidden fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full rounded-3xl p-6 text-center border-4 border-yellow-300">
+      
+      <div class="text-5xl mb-2 animate-bounce">🎉</div>
+      <h2 class="text-3xl font-black text-slate-800">Awesome Job!</h2>
+      <p class="text-slate-600 text-sm font-semibold mb-4">You cleared the level!</p>
+
+      <!-- Star Rating Display -->
+      <div id="star-rating-container" class="flex justify-center gap-3 text-4xl mb-6">
+        <i class="fa-solid fa-star text-yellow-400 drop-shadow"></i>
+        <i class="fa-solid fa-star text-yellow-400 drop-shadow"></i>
+        <i class="fa-solid fa-star text-yellow-400 drop-shadow"></i>
+      </div>
+
+      <!-- Stats Summary Grid -->
+      <div class="grid grid-cols-2 gap-3 bg-slate-100/80 p-3.5 rounded-2xl mb-5 text-left border border-slate-200">
+        <div>
+          <span class="text-xs text-slate-500 font-bold uppercase block">Final Score</span>
+          <span id="victory-score" class="text-xl font-black text-blue-600">0</span>
+        </div>
+        <div>
+          <span class="text-xs text-slate-500 font-bold uppercase block">Accuracy</span>
+          <span id="victory-accuracy" class="text-xl font-black text-emerald-600">100%</span>
+        </div>
+      </div>
+
+      <!-- Words Mastered Interactive Review List -->
+      <div class="mb-5 text-left">
+        <div class="text-xs font-bold text-slate-500 uppercase mb-2 flex items-center justify-between">
+          <span>Words Mastered</span>
+          <span class="text-indigo-600 font-bold"><i class="fa-solid fa-volume-high"></i> Tap to listen</span>
+        </div>
+        <div id="victory-words-list" class="flex flex-wrap gap-2 max-h-32 overflow-y-auto p-2 bg-white/60 rounded-xl border border-slate-200">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Navigation Buttons -->
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="restartLevel()" class="py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold rounded-2xl">
+          🔄 Play Again
+        </button>
+        <button onclick="nextLevelOrMenu()" class="py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-extrabold rounded-2xl shadow-md">
+          Next Level ➔
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GAME OVER MODAL -->
+  <div id="gameover-modal" class="hidden fixed inset-0 z-40 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-card max-w-md w-full rounded-3xl p-6 text-center border-4 border-rose-300">
+      
+      <div class="text-5xl mb-2">🎈💥</div>
+      <h2 class="text-3xl font-black text-slate-800">Keep Practicing!</h2>
+      <p class="text-slate-600 text-sm font-semibold mb-4">Out of lives, but you can do it!</p>
+
+      <div class="bg-rose-50 p-4 rounded-2xl border border-rose-100 text-rose-900 text-sm mb-6 text-left">
+        <strong class="block font-bold mb-1"><i class="fa-solid fa-heart-crack text-rose-500 mr-1"></i> Quick Phonics Tip:</strong>
+        Short vowel sounds are quick! 
+        <span class="block mt-1 font-mono text-xs bg-white/80 p-2 rounded-lg text-slate-700">
+          A = /æ/ (cat) &nbsp; E = /ɛ/ (bed)<br>
+          I = /ɪ/ (pig) &nbsp; O = /ɒ/ (dog)<br>
+          U = /ʌ/ (sun)
+        </span>
+      </div>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button onclick="returnToMainMenu()" class="py-3 bg-slate-200 hover:bg-slate-300 text-slate-700 font-extrabold rounded-2xl">
+          🏠 Main Menu
+        </button>
+        <button onclick="restartLevel()" class="py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold rounded-2xl shadow-md">
+          🔄 Try Again
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    
+    // Comprehensive Database of CVC and CCVC Words with Distractors & Explanations
+    const WORD_DATABASE = {
+      cvc: {
+        a: [
+          { word: "cat", phonetic: "/k/ /æ/ /t/", distractors: [{ word: "cet", tip: "'cet' is incorrect! Short 'a' sound is in 'cat'." }, { word: "cit", tip: "'cit' is incorrect! Short 'a' sound is in 'cat'." }] },
+          { word: "hat", phonetic: "/h/ /æ/ /t/", distractors: [{ word: "het", tip: "'het' is incorrect! Short 'a' sound is in 'hat'." }, { word: "hit", tip: "'hit' is incorrect! Short 'a' sound is in 'hat'." }] },
+          { word: "bat", phonetic: "/b/ /æ/ /t/", distractors: [{ word: "bet", tip: "'bet' is incorrect! Short 'a' sound is in 'bat'." }, { word: "bit", tip: "'bit' is incorrect! Short 'a' sound is in 'bat'." }] },
+          { word: "map", phonetic: "/m/ /æ/ /p/", distractors: [{ word: "mep", tip: "'mep' is incorrect! Short 'a' sound is in 'map'." }, { word: "mop", tip: "'mop' is incorrect! Short 'a' sound is in 'map'." }] },
+          { word: "fan", phonetic: "/f/ /æ/ /n/", distractors: [{ word: "fen", tip: "'fen' is incorrect! Short 'a' sound is in 'fan'." }, { word: "fin", tip: "'fin' is incorrect! Short 'a' sound is in 'fan'." }] },
+          { word: "dad", phonetic: "/d/ /æ/ /d/", distractors: [{ word: "ded", tip: "'ded' is incorrect! Short 'a' sound is in 'dad'." }] },
+          { word: "van", phonetic: "/v/ /æ/ /n/", distractors: [{ word: "ven", tip: "'ven' is incorrect! Short 'a' sound is in 'van'." }] }
+        ],
+        e: [
+          { word: "bed", phonetic: "/b/ /ɛ/ /d/", distractors: [{ word: "bad", tip: "'bad' has short 'a', 'bed' uses short 'e'!" }, { word: "bid", tip: "'bid' has short 'i', 'bed' uses short 'e'!" }] },
+          { word: "red", phonetic: "/r/ /ɛ/ /d/", distractors: [{ word: "rad", tip: "'rad' is incorrect! Short 'e' sound is in 'red'." }, { word: "rid", tip: "'rid' is incorrect! Short 'e' sound is in 'red'." }] },
+          { word: "pen", phonetic: "/p/ /ɛ/ /n/", distractors: [{ word: "pan", tip: "'pan' has short 'a'! 'pen' uses short 'e'." }, { word: "pin", tip: "'pin' has short 'i'! 'pen' uses short 'e'." }] },
+          { word: "leg", phonetic: "/l/ /ɛ/ /g/", distractors: [{ word: "lag", tip: "'lag' is incorrect! Short 'e' sound is in 'leg'." }, { word: "lig", tip: "'lig' is incorrect! Short 'e' sound is in 'leg'." }] },
+          { word: "net", phonetic: "/n/ /ɛ/ /t/", distractors: [{ word: "nat", tip: "'nat' is incorrect! Short 'e' sound is in 'net'." }, { word: "nit", tip: "'nit' is incorrect! Short 'e' sound is in 'net'." }] },
+          { word: "hen", phonetic: "/h/ /ɛ/ /n/", distractors: [{ word: "han", tip: "'han' is incorrect! Short 'e' sound is in 'hen'." }] }
+        ],
+        i: [
+          { word: "pig", phonetic: "/p/ /ɪ/ /g/", distractors: [{ word: "peg", tip: "'peg' has short 'e'! 'pig' uses short 'i'." }, { word: "pag", tip: "'pag' is incorrect! 'pig' uses short 'i'." }] },
+          { word: "sit", phonetic: "/s/ /ɪ/ /t/", distractors: [{ word: "set", tip: "'set' has short 'e'! 'sit' uses short 'i'." }, { word: "sat", tip: "'sat' has short 'a'! 'sit' uses short 'i'." }] },
+          { word: "pin", phonetic: "/p/ /ɪ/ /n/", distractors: [{ word: "pen", tip: "'pen' has short 'e'! 'pin' uses short 'i'." }] },
+          { word: "win", phonetic: "/w/ /ɪ/ /n/", distractors: [{ word: "wen", tip: "'wen' is incorrect! Short 'i' sound is in 'win'." }] },
+          { word: "dig", phonetic: "/d/ /ɪ/ /g/", distractors: [{ word: "deg", tip: "'deg' is incorrect! Short 'i' sound is in 'dig'." }] },
+          { word: "zip", phonetic: "/z/ /ɪ/ /p/", distractors: [{ word: "zep", tip: "'zep' is incorrect! Short 'i' sound is in 'zip'." }] }
+        ],
+        o: [
+          { word: "dog", phonetic: "/d/ /ɒ/ /g/", distractors: [{ word: "dag", tip: "'dag' is incorrect! Short 'o' sound is in 'dog'." }, { word: "dug", tip: "'dug' uses short 'u'! 'dog' uses short 'o'." }] },
+          { word: "log", phonetic: "/l/ /ɒ/ /g/", distractors: [{ word: "lag", tip: "'lag' has short 'a'! 'log' uses short 'o'." }, { word: "leg", tip: "'leg' has short 'e'! 'log' uses short 'o'." }] },
+          { word: "mop", phonetic: "/m/ /ɒ/ /p/", distractors: [{ word: "mep", tip: "'mep' is incorrect! Short 'o' sound is in 'mop'." }, { word: "map", tip: "'map' uses short 'a'! 'mop' uses short 'o'." }] },
+          { word: "hop", phonetic: "/h/ /ɒ/ /p/", distractors: [{ word: "hep", tip: "'hep' is incorrect! Short 'o' sound is in 'hop'." }, { word: "hip", tip: "'hip' uses short 'i'! 'hop' uses short 'o'." }] },
+          { word: "box", phonetic: "/b/ /ɒ/ /ks/", distractors: [{ word: "bex", tip: "'bex' is incorrect! Short 'o' sound is in 'box'." }] }
+        ],
+        u: [
+          { word: "sun", phonetic: "/s/ /ʌ/ /n/", distractors: [{ word: "san", tip: "'san' is incorrect! Short 'u' sound is in 'sun'." }, { word: "sen", tip: "'sen' is incorrect! Short 'u' sound is in 'sun'." }] },
+          { word: "cup", phonetic: "/k/ /ʌ/ /p/", distractors: [{ word: "cap", tip: "'cap' uses short 'a'! 'cup' uses short 'u'." }, { word: "cep", tip: "'cep' is incorrect! Short 'u' sound is in 'cup'." }] },
+          { word: "bus", phonetic: "/b/ /ʌ/ /s/", distractors: [{ word: "bas", tip: "'bas' is incorrect! Short 'u' sound is in 'bus'." }] },
+          { word: "bug", phonetic: "/b/ /ʌ/ /g/", distractors: [{ word: "bag", tip: "'bag' uses short 'a'! 'bug' uses short 'u'." }, { word: "beg", tip: "'beg' uses short 'e'! 'bug' uses short 'u'." }] },
+          { word: "tub", phonetic: "/t/ /ʌ/ /b/", distractors: [{ word: "tab", tip: "'tab' uses short 'a'! 'tub' uses short 'u'." }] }
+        ]
+      },
+      ccvc: {
+        a: [
+          { word: "flag", phonetic: "/f/ /l/ /æ/ /g/", distractors: [{ word: "fleg", tip: "'fleg' is incorrect! Short 'a' in 'flag'." }, { word: "flig", tip: "'flig' is incorrect! Short 'a' in 'flag'." }] },
+          { word: "crab", phonetic: "/k/ /r/ /æ/ /b/", distractors: [{ word: "creb", tip: "'creb' is incorrect! Short 'a' in 'crab'." }, { word: "crob", tip: "'crob' is incorrect! Short 'a' in 'crab'." }] },
+          { word: "glad", phonetic: "/g/ /l/ /æ/ /d/", distractors: [{ word: "gled", tip: "'gled' is incorrect! Short 'a' in 'glad'." }] },
+          { word: "plan", phonetic: "/p/ /l/ /æ/ /n/", distractors: [{ word: "plen", tip: "'plen' is incorrect! Short 'a' in 'plan'." }] },
+          { word: "trap", phonetic: "/t/ /r/ /æ/ /p/", distractors: [{ word: "trep", tip: "'trep' is incorrect! Short 'a' in 'trap'." }] }
+        ],
+        e: [
+          { word: "step", phonetic: "/s/ /t/ /ɛ/ /p/", distractors: [{ word: "stap", tip: "'stap' is incorrect! Short 'e' in 'step'." }, { word: "stip", tip: "'stip' is incorrect! Short 'e' in 'step'." }] },
+          { word: "sled", phonetic: "/s/ /l/ /ɛ/ /d/", distractors: [{ word: "slad", tip: "'slad' is incorrect! Short 'e' in 'sled'." }] },
+          { word: "stem", phonetic: "/s/ /t/ /ɛ/ /m/", distractors: [{ word: "stam", tip: "'stam' is incorrect! Short 'e' in 'stem'." }] }
+        ],
+        i: [
+          { word: "swim", phonetic: "/s/ /w/ /ɪ/ /m/", distractors: [{ word: "swam", tip: "'swam' has short 'a'! 'swim' uses short 'i'." }, { word: "swem", tip: "'swem' is incorrect! 'swim' uses short 'i'." }] },
+          { word: "skip", phonetic: "/s/ /k/ /ɪ/ /p/", distractors: [{ word: "skap", tip: "'skap' is incorrect! Short 'i' in 'skip'." }, { word: "skep", tip: "'skep' is incorrect! Short 'i' in 'skip'." }] },
+          { word: "trip", phonetic: "/t/ /r/ /ɪ/ /p/", distractors: [{ word: "trap", tip: "'trap' has short 'a'! 'trip' uses short 'i'." }] },
+          { word: "spin", phonetic: "/s/ /p/ /ɪ/ /n/", distractors: [{ word: "span", tip: "'span' has short 'a'! 'spin' uses short 'i'." }] }
+        ],
+        o: [
+          { word: "frog", phonetic: "/f/ /r/ /ɒ/ /g/", distractors: [{ word: "frag", tip: "'frag' is incorrect! Short 'o' in 'frog'." }, { word: "frug", tip: "'frug' is incorrect! Short 'o' in 'frog'." }] },
+          { word: "stop", phonetic: "/s/ /t/ /ɒ/ /p/", distractors: [{ word: "stap", tip: "'stap' is incorrect! Short 'o' in 'stop'." }, { word: "stip", tip: "'stip' is incorrect! Short 'o' in 'stop'." }] },
+          { word: "drop", phonetic: "/d/ /r/ /ɒ/ /p/", distractors: [{ word: "drap", tip: "'drap' is incorrect! Short 'o' in 'drop'." }, { word: "drip", tip: "'drip' has short 'i'! 'drop' uses short 'o'." }] },
+          { word: "spot", phonetic: "/s/ /p/ /ɒ/ /t/", distractors: [{ word: "spat", tip: "'spat' has short 'a'! 'spot' uses short 'o'." }] }
+        ],
+        u: [
+          { word: "drum", phonetic: "/d/ /r/ /ʌ/ /m/", distractors: [{ word: "dram", tip: "'dram' is incorrect! Short 'u' in 'drum'." }, { word: "drom", tip: "'drom' is incorrect! Short 'u' in 'drum'." }] },
+          { word: "plug", phonetic: "/p/ /l/ /ʌ/ /g/", distractors: [{ word: "plag", tip: "'plag' is incorrect! Short 'u' in 'plug'." }, { word: "plig", tip: "'plig' is incorrect! Short 'u' in 'plug'." }] },
+          { word: "plum", phonetic: "/p/ /l/ /ʌ/ /m/", distractors: [{ word: "plam", tip: "'plam' is incorrect! Short 'u' in 'plum'." }] },
+          { word: "club", phonetic: "/k/ /l/ /ʌ/ /b/", distractors: [{ word: "clab", tip: "'clab' is incorrect! Short 'u' in 'club'." }] }
+        ]
+      }
+    };
+
+    
+    // Web Audio API Procedural Sound Effects Synthesizer
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (AudioContext) {
+            this.ctx = new AudioContext();
+          }
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playPop() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        // Rapid pitch sweep downwards for soap bubble pop
+        const now = this.ctx.currentTime;
+        osc.frequency.setValueAtTime(800, now);
+        osc.frequency.exponentialRampToValueAtTime(150, now + 0.08);
+
+        gain.gain.setValueAtTime(0.4, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.08);
+      }
+
+      playSuccessChord() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        // Triad chime chord (C5, E5, G5)
+        const freqs = [523.25, 659.25, 783.99];
+
+        freqs.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.04);
+
+          gain.gain.setValueAtTime(0.2, now + idx * 0.04);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35 + idx * 0.04);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now + idx * 0.04);
+          osc.stop(now + 0.4 + idx * 0.04);
+        });
+      }
+
+      playMistakeBuzz() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(180, now);
+        osc.frequency.linearRampToValueAtTime(110, now + 0.25);
+
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.25);
+      }
+
+      playFanfare() {
+        if (this.muted) return;
+        this.init();
+        if (!this.ctx) return;
+
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const now = this.ctx.currentTime;
+
+        notes.forEach((freq, i) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + i * 0.12);
+
+          gain.gain.setValueAtTime(0.3, now + i * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.12 + 0.4);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now + i * 0.12);
+          osc.stop(now + i * 0.12 + 0.45);
+        });
+      }
+    }
+
+    const soundEngine = new SoundEngine();
+
+    
+    // Web Speech API Integration
+    class SpeechEngine {
+      constructor() {
+        this.enabled = true;
+        this.synth = window.speechSynthesis || null;
+      }
+
+      speakWord(word, phonetic = "") {
+        if (!this.enabled || !this.synth) return;
+
+        // Cancel existing ongoing speech
+        this.synth.cancel();
+
+        // Speech phrase: e.g. "Cat! /k/ /æ/ /t/ - Cat!" or clear word callout
+        const phrase = `${word}!`;
+        const utterance = new SpeechSynthesisUtterance(phrase);
+        utterance.rate = 0.88; // Slower pace for young learners
+        utterance.pitch = 1.15; // Cheerful tone
+
+        // Try selecting friendly English voice if available
+        const voices = this.synth.getVoices();
+        const preferredVoice = voices.find(v => v.lang.startsWith('en') && (v.name.includes('Natural') || v.name.includes('Google') || v.name.includes('Samantha')));
+        if (preferredVoice) {
+          utterance.voice = preferredVoice;
+        }
+
+        this.synth.speak(utterance);
+      }
+    }
+
+    const speechEngine = new SpeechEngine();
+
+    
+    // Game Canvas Setup & State
+    const canvas = document.getElementById('game-canvas');
+    const ctx = canvas.getContext('2d');
+
+    let gameState = {
+      active: false,
+      paused: false,
+      level: 1,
+      targetVowel: 'all',
+      score: 0,
+      lives: 3,
+      combo: 0,
+      maxCombo: 0,
+      correctPoppedCount: 0,
+      targetCountToWin: 12,
+      wordsPopped: [],
+      spawnTimer: 0,
+      spawnInterval: 100, // Frames
+      bubbles: [],
+      particles: [],
+      floatingTexts: []
+    };
+
+    // Responsive Canvas Resize
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    // Bubble Class with Glassy Physics & Text
+    class Bubble {
+      constructor(wordData, isCorrect) {
+        this.radius = Math.min(Math.max(window.innerWidth * 0.065, 42), 65); // Large touch targets
+        this.x = Math.random() * (canvas.width - this.radius * 2) + this.radius;
+        this.y = canvas.height + this.radius + 10;
+        
+        // Speed based on level
+        const speedMultiplier = gameState.level === 4 ? 1.4 : 1.0;
+        this.speedY = (1.2 + Math.random() * 1.1) * speedMultiplier;
+        
+        // Horizontal swaying physics
+        this.swayAmplitude = 1.2 + Math.random() * 1.5;
+        this.swaySpeed = 0.02 + Math.random() * 0.02;
+        this.swayPhase = Math.random() * Math.PI * 2;
+
+        this.word = wordData.word;
+        this.phonetic = wordData.phonetic || "";
+        this.tip = wordData.tip || "";
+        this.isCorrect = isCorrect;
+
+        // Pastel Bubble Hue Theme
+        const HUES = [190, 280, 320, 150, 45]; // Cyan, Purple, Pink, Emerald, Yellow
+        this.hue = HUES[Math.floor(Math.random() * HUES.length)];
+        
+        this.popped = false;
+        this.popScale = 1.0;
+      }
+
+      update() {
+        this.y -= this.speedY;
+        this.swayPhase += this.swaySpeed;
+        this.x += Math.sin(this.swayPhase) * this.swayAmplitude;
+
+        // Keep inside screen width boundaries
+        if (this.x - this.radius < 0) this.x = this.radius;
+        if (this.x + this.radius > canvas.width) this.x = canvas.width - this.radius;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        // Glassy Translucent Soap Bubble Gradient
+        const gradient = ctx.createRadialGradient(
+          -this.radius * 0.3, -this.radius * 0.3, this.radius * 0.1,
+          0, 0, this.radius
+        );
+        gradient.addColorStop(0, `hsla(${this.hue}, 90%, 95%, 0.95)`);
+        gradient.addColorStop(0.5, `hsla(${this.hue}, 80%, 75%, 0.4)`);
+        gradient.addColorStop(0.85, `hsla(${this.hue}, 85%, 65%, 0.6)`);
+        gradient.addColorStop(1, `hsla(${this.hue}, 90%, 55%, 0.85)`);
+
+        // Bubble Shadow
+        ctx.shadowColor = `hsla(${this.hue}, 60%, 40%, 0.25)`;
+        ctx.shadowBlur = 12;
+        ctx.shadowOffsetY = 4;
+
+        // Bubble Circle Body
+        ctx.beginPath();
+        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+        ctx.fillStyle = gradient;
+        ctx.fill();
+
+        // Outer iridescent border
+        ctx.shadowColor = 'transparent';
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = `hsla(${this.hue}, 90%, 85%, 0.8)`;
+        ctx.stroke();
+
+        // Top-left glossy shine highlight arc
+        ctx.beginPath();
+        ctx.arc(-this.radius * 0.35, -this.radius * 0.35, this.radius * 0.45, Math.PI * 1.1, Math.PI * 1.6);
+        ctx.lineWidth = this.radius * 0.12;
+        ctx.lineCap = 'round';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
+        ctx.stroke();
+
+        // Text Inside Bubble
+        ctx.font = `900 ${Math.round(this.radius * 0.52)}px 'Fredoka', 'Nunito', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        // Text Outline for Contrast
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.strokeText(this.word, 0, 1);
+
+        // Text Fill
+        ctx.fillStyle = '#1e293b'; // Slate 800
+        ctx.fillText(this.word, 0, 1);
+
+        ctx.restore();
+      }
+
+      containsPoint(px, py) {
+        const dx = px - this.x;
+        const dy = py - this.y;
+        return (dx * dx + dy * dy) <= (this.radius * this.radius);
+      }
+    }
+
+    
+    // Sparkle / Water Droplet Particle
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x;
+        this.y = y;
+        this.radius = 3 + Math.random() * 5;
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 2 + Math.random() * 6;
+        this.vx = Math.cos(angle) * speed;
+        this.vy = Math.sin(angle) * speed;
+        this.color = color;
+        this.alpha = 1.0;
+        this.decay = 0.02 + Math.random() * 0.03;
+        this.gravity = 0.12;
+      }
+
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.alpha -= this.decay;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // Floating Score / Feedback Text (+100, Combo x2!)
+    class FloatingText {
+      constructor(text, x, y, color) {
+        this.text = text;
+        this.x = x;
+        this.y = y;
+        this.color = color;
+        this.alpha = 1.0;
+        this.scale = 1.0;
+      }
+
+      update() {
+        this.y -= 1.8;
+        this.alpha -= 0.02;
+        this.scale += 0.01;
+      }
+
+      draw() {
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.font = `900 ${Math.round(24 * this.scale)}px 'Fredoka', sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.fillStyle = this.color;
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 4;
+        ctx.strokeText(this.text, this.x, this.y);
+        ctx.fillText(this.text, this.x, this.y);
+        ctx.restore();
+      }
+    }
+
+    function createPopParticles(x, y, hue, isCorrect) {
+      const count = isCorrect ? 22 : 12;
+      const colors = isCorrect
+        ? [`hsl(${hue}, 90%, 60%)`, '#34d399', '#fbbf24', '#ffffff', '#60a5fa']
+        : ['#f43f5e', '#fb7185', '#ffffff'];
+
+      for (let i = 0; i < count; i++) {
+        const color = colors[Math.floor(Math.random() * colors.length)];
+        gameState.particles.push(new Particle(x, y, color));
+      }
+    }
+
+    
+    // Bubble Click / Touch Handler
+    function handlePointerDown(e) {
+      if (!gameState.active || gameState.paused) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      const x = clientX - rect.left;
+      const y = clientY - rect.top;
+
+      // Check collision from top bubble down
+      for (let i = gameState.bubbles.length - 1; i >= 0; i--) {
+        const bubble = gameState.bubbles[i];
+        if (bubble.containsPoint(x, y)) {
+          popBubble(bubble, i);
+          break; // Pop one bubble per tap
+        }
+      }
+    }
+
+    canvas.addEventListener('mousedown', handlePointerDown);
+    canvas.addEventListener('touchstart', (e) => {
+      handlePointerDown(e);
+      e.preventDefault();
+    }, { passive: false });
+
+    function popBubble(bubble, index) {
+      // Remove from active array
+      gameState.bubbles.splice(index, 1);
+
+      if (bubble.isCorrect) {
+        // --- CORRECT BUBBLE POP ---
+        soundEngine.playPop();
+        soundEngine.playSuccessChord();
+
+        gameState.correctPoppedCount++;
+        gameState.combo++;
+        if (gameState.combo > gameState.maxCombo) gameState.combo = gameState.combo;
+
+        // Combo score calculation
+        const comboMultiplier = Math.min(gameState.combo, 4);
+        const pointsGained = 100 * comboMultiplier;
+        gameState.score += pointsGained;
+
+        // Visual FX
+        createPopParticles(bubble.x, bubble.y, bubble.hue, true);
+        
+        const comboText = comboMultiplier > 1 ? `+${pointsGained} 🔥${comboMultiplier}x!` : `+${pointsGained}`;
+        gameState.floatingTexts.push(new FloatingText(comboText, bubble.x, bubble.y, '#10b981'));
+
+        // Speak word
+        speechEngine.speakWord(bubble.word, bubble.phonetic);
+
+        // Record mastered word
+        if (!gameState.wordsPopped.includes(bubble.word)) {
+          gameState.wordsPopped.push(bubble.word);
+        }
+
+        // Hide any previous tips
+        hideTipBanner();
+
+        // Check level win
+        if (gameState.correctPoppedCount >= gameState.targetCountToWin) {
+          setTimeout(triggerLevelVictory, 600);
+        }
+
+      } else {
+        // --- INCORRECT BUBBLE POP ---
+        soundEngine.playMistakeBuzz();
+        gameState.combo = 0; // Reset streak
+        gameState.lives--;
+
+        // Screen wobble effect
+        document.body.classList.add('wobble-active');
+        setTimeout(() => document.body.classList.remove('wobble-active'), 450);
+
+        // Particles & Floating Text
+        createPopParticles(bubble.x, bubble.y, 0, false);
+        gameState.floatingTexts.push(new FloatingText('Oops! -1 ❤️', bubble.x, bubble.y, '#f43f5e'));
+
+        // Show Educational Tip
+        showTipBanner(bubble.tip || `'${bubble.word}' is misspelled!`);
+
+        // Check Game Over
+        if (gameState.lives <= 0) {
+          setTimeout(triggerGameOver, 500);
+        }
+      }
+
+      updateHUD();
+    }
+
+    
+    // Bubble Spawner Logic
+    function getWordPoolForLevel() {
+      let pool = [];
+      const lvl = gameState.level;
+      const targetVowel = gameState.targetVowel;
+
+      const filterByVowel = (category) => {
+        if (targetVowel === 'all') {
+          let all = [];
+          Object.keys(category).forEach(v => all.push(...category[v]));
+          return all;
+        }
+        return category[targetVowel] || category['a'];
+      };
+
+      if (lvl === 1) {
+        // Pure CVC
+        pool = filterByVowel(WORD_DATABASE.cvc);
+      } else if (lvl === 2) {
+        // Pure CCVC
+        pool = filterByVowel(WORD_DATABASE.ccvc);
+      } else if (lvl === 3) {
+        // Vowel Spotlight (Mix of CVC & CCVC for selected vowel)
+        const cvcWords = filterByVowel(WORD_DATABASE.cvc);
+        const ccvcWords = filterByVowel(WORD_DATABASE.ccvc);
+        pool = [...cvcWords, ...ccvcWords];
+      } else {
+        // Speed Arcade (All CVC & CCVC)
+        const cvcWords = filterByVowel(WORD_DATABASE.cvc);
+        const ccvcWords = filterByVowel(WORD_DATABASE.ccvc);
+        pool = [...cvcWords, ...ccvcWords];
+      }
+
+      return pool;
+    }
+
+    function spawnBubble() {
+      if (gameState.bubbles.length >= 7) return; // Limit on-screen density
+
+      const pool = getWordPoolForLevel();
+      if (!pool || pool.length === 0) return;
+
+      const randomWordEntry = pool[Math.floor(Math.random() * pool.length)];
+      
+      // 60% chance to spawn a correct word, 40% distractor
+      const isCorrect = Math.random() < 0.6;
+
+      let wordObj = {};
+      if (isCorrect) {
+        wordObj = {
+          word: randomWordEntry.word,
+          phonetic: randomWordEntry.phonetic,
+          tip: ""
+        };
+      } else {
+        const distractor = randomWordEntry.distractors[Math.floor(Math.random() * randomWordEntry.distractors.length)];
+        wordObj = {
+          word: distractor.word,
+          phonetic: "",
+          tip: distractor.tip
+        };
+      }
+
+      gameState.bubbles.push(new Bubble(wordObj, isCorrect));
+    }
+
+    // Main Game Animation Loop (60 FPS)
+    let animationFrameId = null;
+
+    function gameLoop() {
+      if (!gameState.active) return;
+
+      if (!gameState.paused) {
+        // Clear Canvas
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Spawn timer
+        gameState.spawnTimer++;
+        if (gameState.spawnTimer >= gameState.spawnInterval) {
+          gameState.spawnTimer = 0;
+          spawnBubble();
+        }
+
+        // Update & Draw Bubbles
+        for (let i = gameState.bubbles.length - 1; i >= 0; i--) {
+          const bubble = gameState.bubbles[i];
+          bubble.update();
+          bubble.draw();
+
+          // Float off top cleanup
+          if (bubble.y + bubble.radius < 0) {
+            gameState.bubbles.splice(i, 1);
+          }
+        }
+
+        // Update & Draw Particles
+        for (let i = gameState.particles.length - 1; i >= 0; i--) {
+          const p = gameState.particles[i];
+          p.update();
+          p.draw();
+          if (p.alpha <= 0) gameState.particles.splice(i, 1);
+        }
+
+        // Update & Draw Floating Score Texts
+        for (let i = gameState.floatingTexts.length - 1; i >= 0; i--) {
+          const ft = gameState.floatingTexts[i];
+          ft.update();
+          ft.draw();
+          if (ft.alpha <= 0) gameState.floatingTexts.splice(i, 1);
+        }
+      }
+
+      animationFrameId = requestAnimationFrame(gameLoop);
+    }
+
+    
+    // UI Game Controller Functions
+    function startGame(level, vowel = 'all') {
+      soundEngine.init();
+
+      gameState = {
+        active: true,
+        paused: false,
+        level: level,
+        targetVowel: vowel,
+        score: 0,
+        lives: 3,
+        combo: 0,
+        maxCombo: 0,
+        correctPoppedCount: 0,
+        targetCountToWin: level === 4 ? 18 : 12,
+        wordsPopped: [],
+        spawnTimer: 0,
+        spawnInterval: level === 4 ? 65 : 95,
+        bubbles: [],
+        particles: [],
+        floatingTexts: []
+      };
+
+      // Hide Menu Screens & Modals
+      document.getElementById('main-menu').classList.add('hidden');
+      document.getElementById('vowel-modal').classList.add('hidden');
+      document.getElementById('instructions-modal').classList.add('hidden');
+      document.getElementById('pause-modal').classList.add('hidden');
+      document.getElementById('victory-modal').classList.add('hidden');
+      document.getElementById('gameover-modal').classList.add('hidden');
+      
+      // Show HUD
+      document.getElementById('game-hud').classList.remove('hidden');
+
+      // Update HUD Target Text
+      const badge = document.getElementById('target-badge');
+      const targetText = document.getElementById('target-text');
+
+      if (level === 1) {
+        badge.innerText = "Level 1";
+        badge.className = "px-2 py-0.5 bg-emerald-500 text-white text-xs font-black rounded-lg uppercase";
+        targetText.innerText = "Pop correct 3-letter CVC words!";
+      } else if (level === 2) {
+        badge.innerText = "Level 2";
+        badge.className = "px-2 py-0.5 bg-blue-500 text-white text-xs font-black rounded-lg uppercase";
+        targetText.innerText = "Pop correct 4-letter CCVC blends!";
+      } else if (level === 3) {
+        badge.innerText = `Short '${vowel.toUpperCase()}'`;
+        badge.className = "px-2 py-0.5 bg-purple-500 text-white text-xs font-black rounded-lg uppercase";
+        targetText.innerText = `Pop correct short '${vowel.toUpperCase()}' vowel words!`;
+      } else {
+        badge.innerText = "Arcade ⚡";
+        badge.className = "px-2 py-0.5 bg-amber-500 text-white text-xs font-black rounded-lg uppercase";
+        targetText.innerText = "Fast Pop! Build high combos!";
+      }
+
+      updateHUD();
+      hideTipBanner();
+
+      // Start loop
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      gameLoop();
+    }
+
+    function updateHUD() {
+      // Score
+      document.getElementById('hud-score').innerText = gameState.score;
+
+      // Progress Bar
+      const pct = Math.min(100, Math.round((gameState.correctPoppedCount / gameState.targetCountToWin) * 100));
+      document.getElementById('hud-progress-bar').style.width = `${pct}%`;
+
+      // Hearts / Lives
+      const heartsContainer = document.getElementById('lives-container');
+      heartsContainer.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const heart = document.createElement('i');
+        if (i < gameState.lives) {
+          heart.className = 'fa-solid fa-heart text-rose-500 text-sm sm:text-base animate-pulse-grow';
+        } else {
+          heart.className = 'fa-solid fa-heart text-slate-300 text-sm sm:text-base';
+        }
+        heartsContainer.appendChild(heart);
+      }
+
+      // Combo Badge
+      const comboBadge = document.getElementById('combo-badge');
+      if (gameState.combo >= 2) {
+        comboBadge.classList.remove('hidden');
+        comboBadge.innerText = `🔥 ${gameState.combo}x COMBO!`;
+      } else {
+        comboBadge.classList.add('hidden');
+      }
+    }
+
+    function showTipBanner(text) {
+      const banner = document.getElementById('educational-tip-banner');
+      document.getElementById('tip-text').innerText = text;
+      banner.classList.remove('hidden');
+    }
+
+    function hideTipBanner() {
+      document.getElementById('educational-tip-banner').classList.add('hidden');
+    }
+
+    function pauseGame() {
+      if (!gameState.active) return;
+      gameState.paused = true;
+      document.getElementById('pause-modal').classList.remove('hidden');
+    }
+
+    function resumeGame() {
+      gameState.paused = false;
+      document.getElementById('pause-modal').classList.add('hidden');
+    }
+
+    function restartLevel() {
+      startGame(gameState.level, gameState.targetVowel);
+    }
+
+    function returnToMainMenu() {
+      gameState.active = false;
+      document.getElementById('game-hud').classList.add('hidden');
+      document.getElementById('pause-modal').classList.add('hidden');
+      document.getElementById('victory-modal').classList.add('hidden');
+      document.getElementById('gameover-modal').classList.add('hidden');
+      document.getElementById('main-menu').classList.remove('hidden');
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    function triggerLevelVictory() {
+      gameState.active = false;
+      soundEngine.playFanfare();
+
+      document.getElementById('game-hud').classList.add('hidden');
+      document.getElementById('victory-modal').classList.remove('hidden');
+
+      document.getElementById('victory-score').innerText = gameState.score;
+      
+      // Calculate Accuracy %
+      const accuracy = gameState.correctPoppedCount > 0
+        ? Math.round((gameState.correctPoppedCount / (gameState.correctPoppedCount + (3 - gameState.lives))) * 100)
+        : 100;
+      document.getElementById('victory-accuracy').innerText = `${accuracy}%`;
+
+      // Stars earned
+      const starContainer = document.getElementById('star-rating-container');
+      const starsCount = gameState.lives === 3 ? 3 : gameState.lives === 2 ? 2 : 1;
+      starContainer.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const star = document.createElement('i');
+        if (i < starsCount) {
+          star.className = 'fa-solid fa-star text-yellow-400 drop-shadow animate-bounce';
+        } else {
+          star.className = 'fa-solid fa-star text-slate-300';
+        }
+        starContainer.appendChild(star);
+      }
+
+      // Populate Mastered Words
+      const wordList = document.getElementById('victory-words-list');
+      wordList.innerHTML = '';
+      gameState.wordsPopped.forEach(w => {
+        const chip = document.createElement('button');
+        chip.className = 'px-3 py-1 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-extrabold rounded-lg text-sm border border-indigo-200 flex items-center gap-1.5 transition';
+        chip.innerHTML = `<span>${w}</span> <i class="fa-solid fa-volume-high text-xs text-indigo-400"></i>`;
+        chip.onclick = () => speechEngine.speakWord(w);
+        wordList.appendChild(chip);
+      });
+    }
+
+    function triggerGameOver() {
+      gameState.active = false;
+      document.getElementById('game-hud').classList.add('hidden');
+      document.getElementById('gameover-modal').classList.remove('hidden');
+    }
+
+    function nextLevelOrMenu() {
+      if (gameState.level < 4) {
+        startGame(gameState.level + 1, gameState.targetVowel);
+      } else {
+        returnToMainMenu();
+      }
+    }
+
+    // Modal Handlers
+    function openVowelSpotlightModal() {
+      document.getElementById('vowel-modal').classList.remove('hidden');
+    }
+    function closeVowelSpotlightModal() {
+      document.getElementById('vowel-modal').classList.add('hidden');
+    }
+    function openInstructionsModal() {
+      document.getElementById('instructions-modal').classList.remove('hidden');
+    }
+    function closeInstructionsModal() {
+      document.getElementById('instructions-modal').classList.add('hidden');
+    }
+
+    // Audio & Speech Toggles
+    function toggleAudio() {
+      soundEngine.muted = !soundEngine.muted;
+      const btn = document.getElementById('menu-sound-btn');
+      btn.innerHTML = soundEngine.muted
+        ? '<i class="fa-solid fa-volume-xmark text-slate-400"></i>'
+        : '<i class="fa-solid fa-volume-high text-teal-600"></i>';
+    }
+
+    function toggleSpeech() {
+      speechEngine.enabled = !speechEngine.enabled;
+      const btn = document.getElementById('menu-speech-btn');
+      btn.innerHTML = speechEngine.enabled
+        ? '<i class="fa-solid fa-comment-dots text-purple-600"></i>'
+        : '<i class="fa-solid fa-comment-slash text-slate-400"></i>';
+    }
+  </script>
+</body>
+</html>
